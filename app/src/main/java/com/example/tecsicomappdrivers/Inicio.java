@@ -6,9 +6,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,6 +19,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,7 +62,10 @@ import java.util.Map;
 public class Inicio extends AppCompatActivity implements OnMapReadyCallback {
 
     TextView direccionTotal, direccionFinal;
-    Button ubicacion, cerrarSesion,mostrar,myAsignacion;
+    Button ubicacion, cerrarSesion,mostrar,myAsignacion,btnacalificar;
+    Dialog dialogCalificar;
+    ImageView imageView ;
+    Double latitud,longitud;
 
     private FirebaseAuth mAuth;
     private GoogleMap mMap;
@@ -93,8 +100,12 @@ public class Inicio extends AppCompatActivity implements OnMapReadyCallback {
         direccionTotal=findViewById(R.id.tvdireccionTotal);
         ubicacion = findViewById(R.id.butonUbicacion);
         cerrarSesion = findViewById(R.id.butonCerrarSecion);
-        mostrar=findViewById(R.id.botonTaerPeticines);
+        mostrar=findViewById(R.id.bottonEnviarPeticiones);
         myAsignacion=findViewById(R.id.botonMYpetciones);
+        dialogCalificar=new Dialog(Inicio.this);
+        btnacalificar=findViewById(R.id.buttonComentarios);
+        imageView =dialogCalificar.findViewById(R.id.imageViewClose);
+
 
 
         // Bienvenido User
@@ -125,7 +136,17 @@ public class Inicio extends AppCompatActivity implements OnMapReadyCallback {
         mostrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                traerSolicitudes();
+                //openDialog(v);
+
+
+                Custom_Dialog dialog = new Custom_Dialog();
+
+                Bundle bundle = new Bundle();
+                bundle.putString("latitud", String.valueOf(latitud));
+                bundle.putString("body", "Body");
+                dialog.setArguments(bundle);
+                dialog.show(getSupportFragmentManager(), "DialogFragmentWithSetter");
+
             }
         });
 
@@ -140,6 +161,8 @@ public class Inicio extends AppCompatActivity implements OnMapReadyCallback {
                 cargarmyPeticion();
             }
         });
+
+
 
     }
 
@@ -180,6 +203,9 @@ public class Inicio extends AppCompatActivity implements OnMapReadyCallback {
             public void onLocationChanged(Location location) {
                 LatLng miUbicacion = new LatLng(location.getLatitude(), location.getLongitude());
                 direccionTotal.setText("LT= "+location.getLatitude()+" "+"LO= "+location.getLongitude());
+                    latitud=location.getLatitude();
+                enviarLatidtud(latitud);
+
                 mMap.addMarker(new MarkerOptions().position(miUbicacion).title("ubicacion actual"));
                 //                mMap.addMarker(new MarkerOptions().position(miUbicacion).icon(BitmapDescriptorFactory.fromResource(R.drawable.taximarker)).anchor(0.0f,1.0f).position(miUbicacion));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(miUbicacion));
@@ -437,6 +463,29 @@ public class Inicio extends AppCompatActivity implements OnMapReadyCallback {
     }
 
 
+    public void  editarStadoDelRequestAsignado(int  idRequesColsultaIdUpdate){
+        Toast.makeText(Inicio.this,"[Lllego al final Ok Ok]",Toast.LENGTH_SHORT).show();
+
+        String urlUpdateDatosAgisnacion="http://192.168.1.5:4000/editarEstadoRequest/"+idRequesColsultaIdUpdate;
+
+        StringRequest getRequest = new StringRequest(Request.Method.GET, urlUpdateDatosAgisnacion, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                ////////////
+                ///////////  Respusta del servidor///////////
+                ////////////
+                Toast.makeText(Inicio.this,"[Estado Request ]"+response,Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Error Volelly",error.getMessage());
+            }
+        });
+        Volley.newRequestQueue(this).add(getRequest);
+    }
+
+
     public void cargarAsignaciones(String starD,String finishD){
         new FancyGifDialog.Builder(Inicio.this)
                 .setTitle("Direcccion :"+starD) // You can also send title like R.string.from_resources
@@ -485,6 +534,14 @@ public class Inicio extends AppCompatActivity implements OnMapReadyCallback {
                     @Override
                     public void OnClick() {
                         Toast.makeText(Inicio.this,"Ok",Toast.LENGTH_SHORT).show();
+                        editarStadoDelRequestAsignado(idRequest);
+                        try {
+                                    openingWinDialog();
+                        }catch (Error error){
+                            Toast.makeText(Inicio.this, (CharSequence) error, Toast.LENGTH_SHORT).show();
+                        }
+                        openingWinDialog();
+
                     }
                 })
                 .OnNegativeClicked(new FancyGifDialogListener() {
@@ -495,5 +552,31 @@ public class Inicio extends AppCompatActivity implements OnMapReadyCallback {
                 })
                 .build();
     }
+    private  void  openingWinDialog(){
+        dialogCalificar.setContentView(R.layout.win_layout);
+        dialogCalificar.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+      /*
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogCalificar.dismiss();
+                Toast.makeText(Inicio.this,"Dialog Close",Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        */
+        
+        dialogCalificar.show();
+    }
+
+    public void openDialog(View view){
+        Custom_Dialog custom_dialog = new Custom_Dialog();
+        custom_dialog.show(getSupportFragmentManager(),"Ingresa Una Referencia De tu Ubicacion");
+    }
+
+    public Double enviarLatidtud(Double latitud){
+        return latitud;
+    }
+
 
 }

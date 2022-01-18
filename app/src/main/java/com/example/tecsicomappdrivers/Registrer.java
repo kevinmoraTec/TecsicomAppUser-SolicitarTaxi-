@@ -31,7 +31,7 @@ public class Registrer extends AppCompatActivity {
     String nombre="";
     String nickname="";
     String placaDriver="";
-    String rucDriver="";
+    String rucUser="";
     String numeroTelefono="";
     String direccion="";
     String email="";
@@ -53,7 +53,6 @@ public class Registrer extends AppCompatActivity {
 
         etnombre=findViewById(R.id.etNombre);
         etNicname=findViewById(R.id.etNickName);
-        etPalcaDriver=findViewById(R.id.etPlacaDriver);
         etRucDriver=findViewById(R.id.etRucDriver);
         etNumberPhone=findViewById(R.id.etNumberPhone);
         etDireccion=findViewById(R.id.etDireccion);
@@ -70,8 +69,7 @@ public class Registrer extends AppCompatActivity {
 
                 nombre=etnombre.getText().toString();
                 nickname=etNicname.getText().toString();
-                placaDriver=etPalcaDriver.getText().toString();
-                rucDriver=etRucDriver.getText().toString();
+                rucUser=etRucDriver.getText().toString();
                 numeroTelefono=etNumberPhone.getText().toString();
                 direccion=etDireccion.getText().toString();
                 email=etEmail.getText().toString();
@@ -86,7 +84,7 @@ public class Registrer extends AppCompatActivity {
 
 
     public void ValidarCapos(){
-    if (nombre.isEmpty() && nickname.isEmpty() && placaDriver.isEmpty() && rucDriver.isEmpty() && numeroTelefono.isEmpty() &&
+    if (nombre.isEmpty() && nickname.isEmpty() && placaDriver.isEmpty() && rucUser.isEmpty() && numeroTelefono.isEmpty() &&
     direccion.isEmpty() && email.isEmpty() && password.isEmpty() ){
         Toast.makeText(Registrer.this,"Debe Completar los Campos",Toast.LENGTH_SHORT).show();
     }else {
@@ -106,15 +104,14 @@ public class Registrer extends AppCompatActivity {
                 Map<String,Object> map = new HashMap<>();
                 map.put("NameDriver",nombre);
                 map.put("Nickname",nickname);
-                map.put("PlacaDriver",placaDriver);
-                map.put("Ruc",rucDriver);
+                map.put("Ruc",rucUser);
                 map.put("NumberPhone",numeroTelefono);
                 map.put("AddressDriver",direccion);
                 map.put("Email",email);
                 map.put("Password",password);
                 map.put("DateBirthday",fecha);
                 String id=mAuth.getCurrentUser().getUid();
-                mDatabase.child("Drivers").child(id).setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                mDatabase.child("Users").child(id).setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task2) {
                         if (task2.isSuccessful()){

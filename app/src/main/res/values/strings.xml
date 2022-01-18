@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TecsicomAppUsers</string>
+    <string name="app_name">UsuariosTecsicom</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
 

@@ -17,4 +17,6 @@
     <color name="descriptionText">#777777</color>
     <color name="positiveButton">#FF4081</color>
     <color name="negativeButton">#A9A7A8</color>
+    <color name="colorYello">#FFC107</color>
+    <color name="colorRed">#D3443A</color>
 </resources>
